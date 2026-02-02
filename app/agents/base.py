@@ -1,6 +1,7 @@
 from typing import List, Optional, Any
 from agno.agent import Agent
 from agno.models.mistral import MistralChat
+from agno.tools.reasoning import ReasoningTools
 
 from app.memory import get_shared_db
 from app.utils import get_agent_prompt
@@ -12,27 +13,34 @@ def create_agent(
     tools: Optional[List[Any]] = None,
     output_schema: Optional[Any] = None,
     user_id: str = "civic-system",
-    reasoning: bool = True,
+    enable_reasoning_tools: bool = True,
 ) -> Agent:
     """
     Factory function to create a standardized Civic Remediation Agent.
     Handles prompt loading (with fallback), memory connection, and model setup.
+    
+    Args:
+        enable_reasoning_tools: If True, adds ReasoningTools (think/analyze) that agents
+                               can use selectively. If False, no reasoning capabilities.
     """
     # Load prompt
     prompt = get_agent_prompt(slug)
+    
+    # Build tools list
+    agent_tools = tools or []
+    if enable_reasoning_tools:
+        # Add reasoning tools so agent can choose when to think/analyze
+        agent_tools = [ReasoningTools()] + agent_tools
     
     # Create Agent
     return Agent(
         name=name,
         model=MistralChat(id=model_id),
-        tools=tools or [],
+        tools=agent_tools,
         output_schema=output_schema,
-        reasoning=reasoning,
         db=get_shared_db(),
         update_memory_on_run=True,
         user_id=user_id,
-        # We can inject instructions/prompts here if needed, 
-        # but the current agents manage prompt formatting themselves in methods.
     )
 
 class BaseAgent:
