@@ -23,8 +23,21 @@ def create_agent(
         enable_reasoning_tools: If True, adds ReasoningTools (think/analyze) that agents
                                can use selectively. If False, no reasoning capabilities.
     """
-    # Load prompt
+    # Load prompt and extract system instructions
     prompt = get_agent_prompt(slug)
+    
+    # Extract system message content for agent instructions
+    instructions = None
+    try:
+        # Format with empty placeholders to get the messages
+        messages = prompt.format()
+        for msg in messages:
+            if msg.role == "system":
+                instructions = msg.content
+                break
+    except Exception:
+        # If formatting fails (missing vars), try raw access
+        pass
     
     # Build tools list
     agent_tools = tools or []
@@ -32,10 +45,11 @@ def create_agent(
         # Add reasoning tools so agent can choose when to think/analyze
         agent_tools = [ReasoningTools()] + agent_tools
     
-    # Create Agent
+    # Create Agent with instructions
     return Agent(
         name=name,
         model=MistralChat(id=model_id),
+        instructions=instructions,  # Give agent its specialized identity
         tools=agent_tools,
         output_schema=output_schema,
         db=get_shared_db(),
