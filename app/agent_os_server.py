@@ -3,29 +3,24 @@ Civic Remediation AgentOS Configuration.
 Serves the autonomous agent team via the Agno AgentOS platform.
 """
 from agno.os import AgentOS
+from agno.tools.parallel import ParallelTools
 from dotenv import load_dotenv
 
-# Import the Team Factory
+# Import the Team Factory and Agent Factory
 from app.team import create_civic_team
-
-# Import Individual Agents (optional, if you want to access them separately in OS)
-from app.agents.sentinel import SentinelAgent
-from app.agents.analyst import AnalystAgent
-from app.agents.engineer import EngineerAgent
-from app.agents.strategist import StrategistAgent
-from app.agents.liaison import LiaisonAgent
+from app.agents.base import create_agent
 
 load_dotenv()
 
 # Instantiate the full team
 civic_team = create_civic_team()
 
-# Instantiate individual agents for granular access
-sentinel = SentinelAgent().agent
-analyst = AnalystAgent().agent
-engineer = EngineerAgent().agent
-strategist = StrategistAgent().agent
-liaison = LiaisonAgent().agent
+# Instantiate individual agents for granular access (without output_schema for conversational mode)
+sentinel = create_agent(name="Sentinel", slug="sentinel", tools=[ParallelTools(enable_search=True)])
+analyst = create_agent(name="Analyst", slug="analyst")
+engineer = create_agent(name="Engineer", slug="engineer", tools=[ParallelTools(enable_search=True, enable_extract=True)])
+strategist = create_agent(name="Strategist", slug="strategist")
+liaison = create_agent(name="Liaison", slug="liaison")
 
 # Create the AgentOS instance
 agent_os = AgentOS(
