@@ -1,5 +1,4 @@
-from agno.agent import Agent
-from agno.models.mistral import MistralChat
+from app.agents.base import create_agent, BaseAgent
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -16,19 +15,15 @@ class RankedStrategy(BaseModel):
     ranked_vendors: List[RankedVendor]
     selected_strategy: str
 
-class StrategistAgent:
+class StrategistAgent(BaseAgent):
     def __init__(self, user_id: str = "civic-system"):
-        from app.utils import get_agent_prompt
-        self.prompt = get_agent_prompt("strategist")
+        super().__init__("Strategist", "strategist", user_id)
         
-        self.agent = Agent(
+        self.agent = create_agent(
             name="Strategist",
-            model=MistralChat(id="mistral-large-latest"),
-            reasoning=True,
-            db=get_shared_db(),
-            update_memory_on_run=True,
+            slug="strategist",
             output_schema=RankedStrategy,
-            user_id=user_id,
+            user_id=user_id
         )
 
     def develop_strategy(self, vendors: VendorList) -> RankedStrategy:

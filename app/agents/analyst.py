@@ -1,5 +1,4 @@
-from agno.agent import Agent
-from agno.models.mistral import MistralChat
+from app.agents.base import create_agent, BaseAgent
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -13,21 +12,15 @@ class RootCauseAnalysis(BaseModel):
     scientific_context: str = Field(..., description="Scientific context backing the analysis")
     severity_score: int = Field(..., description="Severity score from 1-10")
 
-class AnalystAgent:
+class AnalystAgent(BaseAgent):
     def __init__(self, user_id: str = "civic-system"):
-        from app.utils import get_agent_prompt
-        self.prompt = get_agent_prompt("analyst")
+        super().__init__("Analyst", "analyst", user_id)
         
-        self.agent = Agent(
+        self.agent = create_agent(
             name="Analyst",
-            model=MistralChat(id="mistral-large-latest"),
-            reasoning=True,
-            db=get_shared_db(),
-            update_memory_on_run=True,
-            knowledge=get_civic_knowledge(),
-            search_knowledge=True,
+            slug="analyst",
             output_schema=RootCauseAnalysis,
-            user_id=user_id,
+            user_id=user_id
         )
 
     def analyze_pitfall(self, pitfall: Pitfall) -> RootCauseAnalysis:

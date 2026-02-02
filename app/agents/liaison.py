@@ -3,6 +3,8 @@ from agno.models.mistral import MistralChat
 from agno.tools import tool
 from pydantic import BaseModel, Field
 
+from app.agents.base import create_agent, BaseAgent
+from app.agents.liaison import ProposalDraft
 from app.memory import get_shared_db
 from .strategist import RankedStrategy
 
@@ -23,20 +25,16 @@ def submit_proposal(vendor_name: str, email_draft: str) -> str:
     return f"Proposal submitted to {vendor_name}. Email content: {email_draft[:100]}..."
 
 
-class LiaisonAgent:
+class LiaisonAgent(BaseAgent):
     def __init__(self, user_id: str = "civic-system"):
-        from app.utils import get_agent_prompt
-        self.prompt = get_agent_prompt("liaison")
+        super().__init__("Liaison", "liaison", user_id)
         
-        self.agent = Agent(
+        self.agent = create_agent(
             name="Liaison",
-            model=MistralChat(id="mistral-large-latest"),
-            reasoning=True,
-            db=get_shared_db(),
-            update_memory_on_run=True,
-            tools=[submit_proposal],  # HITL-protected tool
+            slug="liaison",
+            tools=[submit_proposal],
             output_schema=ProposalDraft,
-            user_id=user_id,
+            user_id=user_id
         )
 
     def create_proposal(self, strategy: RankedStrategy) -> ProposalDraft:

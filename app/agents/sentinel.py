@@ -1,5 +1,4 @@
-from agno.agent import Agent
-from agno.models.mistral import MistralChat
+from app.agents.base import create_agent, BaseAgent
 from agno.tools.parallel import ParallelTools
 from pydantic import BaseModel, Field
 
@@ -12,22 +11,16 @@ class Pitfall(BaseModel):
     metrics: str = Field(..., description="Hard metrics describing the scale (e.g., '12B liters waste')")
     source_url: str = Field(..., description="URL of the source news/report")
 
-class SentinelAgent:
+class SentinelAgent(BaseAgent):
     def __init__(self, user_id: str = "civic-system"):
-        from app.utils import get_agent_prompt
-        self.prompt = get_agent_prompt("sentinel")
+        super().__init__("Sentinel", "sentinel", user_id)
         
-        self.agent = Agent(
+        self.agent = create_agent(
             name="Sentinel",
-            model=MistralChat(id="mistral-large-latest"),
+            slug="sentinel",
             tools=[ParallelTools(enable_search=True)],
-            reasoning=True,  # Enable chain-of-thought reasoning
-            db=get_shared_db(),
-            update_memory_on_run=True,
-            knowledge=get_civic_knowledge(),
-            search_knowledge=True,
             output_schema=Pitfall,
-            user_id=user_id,
+            user_id=user_id
         )
 
     def search_for_pitfalls(self, query: str) -> Pitfall:
