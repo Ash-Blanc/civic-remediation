@@ -43,4 +43,4 @@ app = agent_os.get_app()
 if __name__ == "__main__":
     # Serve the application
     # Note: 'app.agent_os_server:app' must match the filename and app variable
-    agent_os.serve(app="app.agent_os_server:app", reload=True, port=8000)
+    agent_os.serve(app="app.agent_os_server:app", reload=True, port=7777)

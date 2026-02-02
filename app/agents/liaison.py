@@ -4,7 +4,6 @@ from agno.tools import tool
 from pydantic import BaseModel, Field
 
 from app.agents.base import create_agent, BaseAgent
-from app.agents.liaison import ProposalDraft
 from app.memory import get_shared_db
 from .strategist import RankedStrategy
 
