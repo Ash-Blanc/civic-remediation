@@ -21,6 +21,7 @@ dependencies = [
     "ddgs>=9.10.0",
     "pyjwt>=2.11.0",
     "mistralai>=1.11.1",
+    "ollama>=0.6.1",
 ]
 
 [dependency-groups]

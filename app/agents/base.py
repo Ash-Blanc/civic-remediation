@@ -1,15 +1,21 @@
 from typing import List, Optional, Any
+from os import getenv
 from agno.agent import Agent
-from agno.models.mistral import MistralChat
+from agno.models.openai.like import OpenAILike
 from agno.tools.reasoning import ReasoningTools
 
 from app.memory import get_shared_db
 from app.utils import get_agent_prompt
 
+# Pollinations.ai OpenAI-compatible endpoint
+POLLINATIONS_BASE_URL = "https://gen.pollinations.ai/v1"
+# Default model - can be: openai, openai-fast, qwen-coder, mistral, deepseek, grok, claude, nova-fast, etc.
+DEFAULT_MODEL = "openai"
+
 def create_agent(
     name: str,
     slug: str,
-    model_id: str = "mistral-large-latest",
+    model_id: str = DEFAULT_MODEL,
     tools: Optional[List[Any]] = None,
     output_schema: Optional[Any] = None,
     user_id: str = "civic-system",
@@ -19,7 +25,10 @@ def create_agent(
     Factory function to create a standardized Civic Remediation Agent.
     Handles prompt loading (with fallback), memory connection, and model setup.
     
+    Uses Pollinations.ai as the LLM provider via OpenAI-compatible API.
+    
     Args:
+        model_id: Pollinations.ai model name (openai, mistral, deepseek, claude, etc.)
         enable_reasoning_tools: If True, adds ReasoningTools (think/analyze) that agents
                                can use selectively. If False, no reasoning capabilities.
     """
@@ -45,10 +54,14 @@ def create_agent(
         # Add reasoning tools so agent can choose when to think/analyze
         agent_tools = [ReasoningTools()] + agent_tools
     
-    # Create Agent with instructions
+    # Create Agent with Pollinations.ai
     return Agent(
         name=name,
-        model=MistralChat(id=model_id),
+        model=OpenAILike(
+            id=model_id,
+            base_url=POLLINATIONS_BASE_URL,
+            api_key=getenv("POLLINATIONS_API_KEY", "not-provided"),  # Optional for Pollinations.ai
+        ),
         instructions=instructions,  # Give agent its specialized identity
         tools=agent_tools,
         output_schema=output_schema,

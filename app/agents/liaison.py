@@ -1,5 +1,4 @@
 from agno.agent import Agent
-from agno.models.mistral import MistralChat
 from agno.tools import tool
 from pydantic import BaseModel, Field
 

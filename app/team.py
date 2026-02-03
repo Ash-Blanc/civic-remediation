@@ -2,11 +2,13 @@
 Civic Remediation Team - Intelligent Agent Coordination.
 The team leader coordinates all agents and delegates tasks intelligently.
 """
+from os import getenv
 from agno.agent import Agent
 from agno.team import Team
-from agno.models.mistral import MistralChat
+from agno.models.openai.like import OpenAILike
 
 from app.memory import get_shared_db
+from app.agents.base import POLLINATIONS_BASE_URL, DEFAULT_MODEL
 from app.knowledge import get_civic_knowledge
 from app.agents.sentinel import SentinelAgent, Pitfall
 from app.agents.analyst import AnalystAgent, RootCauseAnalysis
@@ -33,8 +35,12 @@ def create_civic_team(user_id: str = "civic-system") -> Team:
     # In Agno, the Team object acts as the leader/coordinator
     team = Team(
         name="Civic Remediation Team",
-        model=MistralChat(id="mistral-large-latest"),
-        reasoning=True,
+        model=OpenAILike(
+            id=DEFAULT_MODEL,
+            base_url=POLLINATIONS_BASE_URL,
+            api_key=getenv("POLLINATIONS_API_KEY", "not-provided"),
+        ),
+        reasoning=False,  # Disable verbose reasoning output for clean end-user responses
         db=get_shared_db(),
         update_memory_on_run=True,
         knowledge=get_civic_knowledge(),

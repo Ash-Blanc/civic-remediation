@@ -5,6 +5,7 @@ Provides RAG capabilities using PgVector.
 import os
 from agno.knowledge.knowledge import Knowledge
 from agno.vectordb.pgvector import PgVector
+from agno.knowledge.embedder.google import GeminiEmbedder
 
 # Database URL from environment or default
 DB_URL = os.getenv(
@@ -22,6 +23,7 @@ def get_civic_knowledge() -> Knowledge:
         vector_db=PgVector(
             table_name="civic_knowledge",
             db_url=DB_URL,
+            embedder=GeminiEmbedder(),
         ),
     )
 
