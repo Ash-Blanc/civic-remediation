@@ -58,6 +58,9 @@ def create_civic_team(user_id: str = "civic-system") -> Team:
         members=[sentinel, analyst, engineer, strategist, liaison],
         add_team_history_to_members=True,  # Shared context
         user_id=user_id,
+        # Provide current datetime context to prevent knowledge cutoff hallucinations
+        add_datetime_to_context=True,
+        timezone_identifier="Etc/UTC",
     )
     
     return team

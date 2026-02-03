@@ -10,7 +10,7 @@ from app.utils import get_agent_prompt
 # Pollinations.ai OpenAI-compatible endpoint
 POLLINATIONS_BASE_URL = "https://gen.pollinations.ai/v1"
 # Default model - can be: openai, openai-fast, qwen-coder, mistral, deepseek, grok, claude, nova-fast, etc.
-DEFAULT_MODEL = "openai"
+DEFAULT_MODEL = "nova-fast"
 
 def create_agent(
     name: str,
@@ -68,6 +68,9 @@ def create_agent(
         db=get_shared_db(),
         update_memory_on_run=True,
         user_id=user_id,
+        # Provide current datetime context to prevent knowledge cutoff hallucinations
+        add_datetime_to_context=True,
+        timezone_identifier="Etc/UTC",
     )
 
 class BaseAgent:
