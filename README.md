@@ -75,7 +75,7 @@ uv run python app/main.py "Pollution of the Ganga River" team
 ### 3. Go Pro (AgentOS)
 Want a nice UI? Run the server and connect it to Agno's interface:
 ```bash
-uv run python app/agent_os_server.py
+uv run python app/agent_os.py
 ```
 Then visit **[os.agno.com](https://os.agno.com)**.
 

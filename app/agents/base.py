@@ -4,13 +4,13 @@ from agno.agent import Agent
 from agno.models.openai.like import OpenAILike
 from agno.tools.reasoning import ReasoningTools
 
-from app.memory import get_shared_db
+from app.knowledge import get_shared_db
 from app.utils import get_agent_prompt
 
 # Pollinations.ai OpenAI-compatible endpoint
 POLLINATIONS_BASE_URL = "https://gen.pollinations.ai/v1"
 # Default model - can be: openai, openai-fast, qwen-coder, mistral, deepseek, grok, claude, nova-fast, etc.
-DEFAULT_MODEL = "nova-fast"
+DEFAULT_MODEL = "perplexity-reasoning"
 
 def create_agent(
     name: str,
@@ -19,7 +19,7 @@ def create_agent(
     tools: Optional[List[Any]] = None,
     output_schema: Optional[Any] = None,
     user_id: str = "civic-system",
-    enable_reasoning_tools: bool = True,
+    enable_reasoning_tools: bool = False,  # Disabled by default - Pollinations models don't format correctly
 ) -> Agent:
     """
     Factory function to create a standardized Civic Remediation Agent.

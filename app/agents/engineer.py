@@ -3,8 +3,7 @@ from agno.tools.parallel import ParallelTools
 from pydantic import BaseModel, Field
 from typing import List
 
-from app.memory import get_shared_db
-from .analyst import RootCauseAnalysis
+# Removed legacy analyst import
 
 class Vendor(BaseModel):
     name: str = Field(..., description="Name of the vendor/startup")
@@ -27,8 +26,8 @@ class EngineerAgent(BaseAgent):
             user_id=user_id
         )
 
-    def find_solutions(self, analysis: RootCauseAnalysis) -> VendorList:
-        messages = self.prompt.format(root_causes=str(analysis.technical_root_causes))
+    def find_solutions(self, investigative_findings: str) -> VendorList:
+        messages = self.prompt.format(investigator_json=investigative_findings)
         formatted_messages = [{"role": m.role, "content": m.content} for m in messages]
         response = self.agent.run(formatted_messages)
         return response.content

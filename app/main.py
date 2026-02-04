@@ -1,64 +1,41 @@
+"""
+Civic Remediation System - Main Entry Point
+
+Supports two modes:
+1. Singleton Pipeline (NEW): Converging flow → ONE problem, ONE cause, ONE solution → Project Launch
+2. Deep Team (Legacy): Intelligent delegation to 7-agent team
+"""
 from dotenv import load_dotenv
 import sys
 
-# Import agents (legacy pipeline)
-from app.agents.sentinel import SentinelAgent
-from app.agents.analyst import AnalystAgent
-from app.agents.engineer import EngineerAgent
-from app.agents.strategist import StrategistAgent
-from app.agents.liaison import LiaisonAgent
-
-# Import team (intelligent delegation)
+# Import both modes
 from app.team import create_civic_team
+from app.workflow import create_singleton_pipeline
 
 load_dotenv()
 
 
-def run_pipeline(query: str = "Pollution of the Ganga River") -> str:
+def run_singleton_pipeline(query: str = "Pollution of the Ganga River"):
     """
-    Legacy sequential pipeline for backward compatibility.
-    Each agent runs in sequence, passing structured outputs.
+    NEW: Singleton Pipeline mode.
+    Converging flow: ONE problem → ONE cause → ONE department → ONE solution → ONE funding → Blueprint
     """
-    print(f"--- Starting Civic Remediation Pipeline for: {query} ---")
+    print(f"--- Starting Singleton Pipeline for: {query} ---")
+    print("Mode: Converging (ONE item per stage)")
     
-    # 1. Ingestion
-    print("\n[Sentinel] Scanning for pitfalls...")
-    sentinel = SentinelAgent()
-    pitfall = sentinel.search_for_pitfalls(query)
-    print(f"  Identified pitfall: {pitfall.title}")
+    pipeline = create_singleton_pipeline()
+    response = pipeline.run(query)
     
-    # 2. Analysis
-    print("\n[Analyst] Analyzing root causes...")
-    analyst = AnalystAgent()
-    analysis = analyst.analyze_pitfall(pitfall)
-    print(f"  Identified {len(analysis.technical_root_causes)} root causes")
-    
-    # 3. Matching
-    print("\n[Engineer] Searching for vendors...")
-    engineer = EngineerAgent()
-    vendors = engineer.find_solutions(analysis)
-    print(f"  Found {len(vendors.vendors)} vendors")
-    
-    # 4. Strategy
-    print("\n[Strategist] Developing strategy...")
-    strategist = StrategistAgent()
-    strategy = strategist.develop_strategy(vendors)
-    print(f"  Strategy selected: {strategy.selected_strategy[:50]}...")
-    
-    # 5. Execution
-    print("\n[Liaison] Drafting proposal...")
-    liaison = LiaisonAgent()
-    proposal = liaison.create_proposal(strategy)
-    
-    return f"Proposal for {proposal.vendor_name}:\n{proposal.proposal_title}\n{proposal.email_draft}"
+    return response
 
 
 def run_team(query: str = "Pollution of the Ganga River") -> str:
     """
-    Team-based intelligent delegation mode.
-    The coordinator decides which agents to invoke and synthesizes results.
+    Legacy: Team-based intelligent delegation mode.
+    The coordinator (Deep Team) decides which agents to invoke and synthesizes results.
     """
-    print(f"--- Starting Civic Remediation Team for: {query} ---")
+    print(f"--- Starting Civic Remediation Deep Team for: {query} ---")
+    print("Mode: Divergent (multiple items per agent)")
     
     team = create_civic_team()
     response = team.run(query)
@@ -66,16 +43,20 @@ def run_team(query: str = "Pollution of the Ganga River") -> str:
     return response.content
 
 
+# Alias for backward compatibility
+run_pipeline = run_singleton_pipeline
+
+
 if __name__ == "__main__":
     query = sys.argv[1] if len(sys.argv) > 1 else "Pollution of the Ganga River"
-    mode = sys.argv[2] if len(sys.argv) > 2 else "pipeline"
+    mode = sys.argv[2] if len(sys.argv) > 2 else "singleton"
     
     if mode == "team":
-        print("Using Team mode (intelligent delegation)")
+        print("Using Deep Team mode (intelligent delegation)")
         result = run_team(query)
     else:
-        print("Using Pipeline mode (sequential)")
-        result = run_pipeline(query)
+        print("Using Singleton Pipeline mode (converging)")
+        result = run_singleton_pipeline(query)
     
     print("\n--- Final Result ---")
     print(result)
