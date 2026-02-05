@@ -8,7 +8,14 @@
 
 It started with a simple thought: **What if we could fix our broken civic systems with AI?**
 
-We all see the loopholes—the potholes that never get filled, the waste management systems that fail, the infrastructure that crumbles while paperwork piles up. This project is a **digital task force** dedicated to solving real-world civic problems by connecting problems to solutions and funding.
+We all see the loopholes—the potholes that never get filled, the waste management systems that fail, the infrastructure that crumbles while paperwork piles up. I saw a YouTube short about these systemic failures and wondered:
+
+> *"What if we can create an agent system that, when asked on a topic, scans the internet, finds such insightful facts/posts, and calls other agents to figure out solutions and take action to get them solved?"*
+
+That's exactly what this project does. It's not just a chatbot; it's a **digital task force** dedicated to solving real-world civic problems.
+
+![Origin Story](assets/origin_story.png)
+*[Read the full original conversation here](https://gemini.google.com/share/edcaf8469ef8)*
 
 ![Civic Remediation Pipeline](assets/pipeline_diagram.png)
 
